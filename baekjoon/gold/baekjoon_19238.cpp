@@ -6,7 +6,7 @@
 
 using namespace std;
 
-const int SIZE = 22;
+const int SIZE = 21;
 
 struct Customer
 {
@@ -15,6 +15,7 @@ struct Customer
     Customer(int _sr, int _sc, int _dr, int _dc) {
         sr = _sr, sc = _sc, dr = _dr, dc = _dc;
     }
+    Customer() {}
 };
 
 struct Taxi
@@ -27,7 +28,7 @@ struct CustomerInfo
 {
     int r, c, dist, idx;
     CustomerInfo(int _r, int _c, int _d, int i) 
-    {r = _r, c = _c, dist = _d, idx = i - 1;}
+    {r = _r, c = _c, dist = _d, idx = i;}
 };
 
 
@@ -35,7 +36,7 @@ int N, M;
 int board[SIZE][SIZE];
 bool isVisited[SIZE][SIZE];
 Taxi taxi;
-vector<Customer> customers;
+Customer customers[SIZE * SIZE];
 
 int dx[4] = {-1, 1, 0, 0};
 int dy[4] = {0, 0, -1, 1};
@@ -51,7 +52,9 @@ void input() {
     for(int i = 1; i <= N; i++)
         for(int j = 1; j <= N; j++) {
             cin >> board[i][j];
-            if(board[i][j] == 1) board[i][j] = -1;
+            
+            if(board[i][j] == 1) 
+                board[i][j] = -1;
         }
     
     cin >> r >> c;
@@ -61,7 +64,7 @@ void input() {
     for (int i = 1; i <= M; i++) {
         cin >> sr >> sc >> dr >> dc;
 
-        customers.push_back(Customer(sr, sc, dr, dc));
+        customers[i] = Customer(sr, sc, dr, dc);
         board[sr][sc] = i;
     }
 }
@@ -77,7 +80,8 @@ bool cmp (CustomerInfo& c1, CustomerInfo& c2) {
         }
         else return false;
     }
-    else return false;
+    
+    return false;
 }
 
 int shortestCustomerIndex() { //taxi to customer
@@ -89,6 +93,7 @@ int shortestCustomerIndex() { //taxi to customer
     isVisited[taxi.r][taxi.c] = true; 
 
     vector<CustomerInfo> vec;
+
     while(!q.empty()) {
         int r = q.front().first.first;
         int c = q.front().first.second;
@@ -149,13 +154,13 @@ bool moveToDst(int idx) {
             return true;
         }
        
-        if(fuel == 0) return false;
+        if(fuel == 0) continue;
 
         for (int i = 0; i < 4; i++) {
             int nr = r + dx[i];
             int nc = c + dy[i];
 
-            if(nr <= 0 || nr > N || nc <= 0 || nr > N) continue;
+            if(nr <= 0 || nr > N || nc <= 0 || nc > N) continue;
             if(isVisited[nr][nc] || board[nr][nc] == -1) continue;
 
             isVisited[nr][nc] = true;
