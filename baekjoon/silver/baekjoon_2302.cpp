@@ -1,45 +1,30 @@
-#include <vector>
-#include <algorithm>
+#include <memory.h>
 #include <iostream>
 
 using namespace std;
 
-const int MAX = 1001;
-int N, maxVal = 0;
-int maxValue[MAX] = {0, };
-int cards[MAX][5];
+int vip[41] = {0, };
+int dp[41];
 
 int main() {
-    cin >> N;
-    
-    for(int i = 0; i < N; i++) 
-        for(int j = 0; j < 5; j++)
-            cin >> cards[i][j];
-    
-    vector<bool> isSelected(5, false);
-    for(int i = 0; i < 3; i++) 
-        isSelected[4 - i] = true;
-    
-    do {
-        for(int i = 0; i < N; i++) {
-            int sum = 0;
-            
-            for(int j = 0; j < 5; j++) 
-                if(isSelected[j])
-                    sum += cards[i][j];
-            
-            sum %= 10;
+    int N, M;
+    cin >> N >> M;
 
-            maxValue[i] = max(maxValue[i], sum);
-            maxVal = max(maxValue[i], maxVal);
-        }
-    } while( next_permutation(isSelected.begin(), isSelected.end()) );
+    for(int i = 1; i <= M; i++) cin >> vip[i];
+
+    memset(dp, 0, sizeof(dp));
+    dp[0] = dp[1] = 1;
     
-    for(int i = N - 1; i >= 0; i--)
-        if(maxVal == maxValue[i]) {
-            cout << i + 1 <<"\n";
-            break;
-        }
+    for(int i = 2; i <= N; i++)
+        dp[i] = dp[i - 1] + dp[i - 2];
+
+    int result = 1;
+    for(int i = 1; i <= M; i++) 
+        result *= dp[vip[i] - 1 - vip[i - 1]];
     
+    result *= dp[N - vip[M]];
+
+    cout << result << "\n";
+
     return 0;
 }
